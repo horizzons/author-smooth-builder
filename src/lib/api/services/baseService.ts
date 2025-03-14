@@ -6,25 +6,34 @@ import { Database } from '@/integrations/supabase/types';
 // Type for table names in our database
 type TableName = keyof Database['public']['Tables'];
 
-export class BaseService<T> {
-  protected tableName: TableName;
+// Type to get the Row type from a table name
+type TableRow<T extends TableName> = Database['public']['Tables'][T]['Row'];
 
-  constructor(tableName: TableName) {
+// Type to get the Insert type from a table name
+type TableInsert<T extends TableName> = Database['public']['Tables'][T]['Insert'];
+
+// Type to get the Update type from a table name
+type TableUpdate<T extends TableName> = Database['public']['Tables'][T]['Update'];
+
+export class BaseService<T extends TableName> {
+  protected tableName: T;
+
+  constructor(tableName: T) {
     this.tableName = tableName;
   }
 
   /**
    * Get all records from a table
    */
-  async getAll(): Promise<ApiResponse<T[]>> {
+  async getAll(): Promise<ApiResponse<TableRow<T>[]>> {
     try {
-      const result = await withTimeout<T[]>(
+      const result = await withTimeout<TableRow<T>[]>(
         supabase.from(this.tableName).select('*')
       );
 
       if (result.error) throw result.error;
 
-      return { data: result.data as T[], error: null };
+      return { data: result.data, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -35,15 +44,15 @@ export class BaseService<T> {
    * Get a record by ID
    * @param id Record ID
    */
-  async getById(id: string): Promise<ApiResponse<T>> {
+  async getById(id: string): Promise<ApiResponse<TableRow<T>>> {
     try {
-      const result = await withTimeout<T>(
+      const result = await withTimeout<TableRow<T>>(
         supabase.from(this.tableName).select('*').eq('id', id).maybeSingle()
       );
 
       if (result.error) throw result.error;
 
-      return { data: result.data as T, error: null };
+      return { data: result.data, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -54,15 +63,15 @@ export class BaseService<T> {
    * Create a new record
    * @param record Record data
    */
-  async create(record: Partial<T>): Promise<ApiResponse<T>> {
+  async create(record: TableInsert<T>): Promise<ApiResponse<TableRow<T>>> {
     try {
-      const result = await withTimeout<T>(
+      const result = await withTimeout<TableRow<T>>(
         supabase.from(this.tableName).insert(record).select().maybeSingle()
       );
 
       if (result.error) throw result.error;
 
-      return { data: result.data as T, error: null };
+      return { data: result.data, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -74,15 +83,15 @@ export class BaseService<T> {
    * @param id Record ID
    * @param record Record data
    */
-  async update(id: string, record: Partial<T>): Promise<ApiResponse<T>> {
+  async update(id: string, record: TableUpdate<T>): Promise<ApiResponse<TableRow<T>>> {
     try {
-      const result = await withTimeout<T>(
+      const result = await withTimeout<TableRow<T>>(
         supabase.from(this.tableName).update(record).eq('id', id).select().maybeSingle()
       );
 
       if (result.error) throw result.error;
 
-      return { data: result.data as T, error: null };
+      return { data: result.data, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -112,7 +121,7 @@ export class BaseService<T> {
    * Query records with filters
    * @param filters Object containing filter criteria
    */
-  async query(filters: Record<string, any>): Promise<ApiResponse<T[]>> {
+  async query(filters: Record<string, any>): Promise<ApiResponse<TableRow<T>[]>> {
     try {
       let query = supabase.from(this.tableName).select('*');
       
@@ -123,11 +132,11 @@ export class BaseService<T> {
         }
       });
       
-      const result = await withTimeout<T[]>(query);
+      const result = await withTimeout<TableRow<T>[]>(query);
 
       if (result.error) throw result.error;
 
-      return { data: result.data as T[], error: null };
+      return { data: result.data, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };

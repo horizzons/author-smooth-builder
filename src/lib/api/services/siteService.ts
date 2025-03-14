@@ -1,9 +1,12 @@
 
 import { BaseService } from './baseService';
-import { SiteService as SiteServiceType, ApiResponse } from '../types';
+import { ApiResponse } from '../types';
 import { supabase, withTimeout, errorInterceptor } from '../client';
+import { Database } from '@/integrations/supabase/types';
 
-class SitesService extends BaseService<SiteServiceType> {
+type SiteRow = Database['public']['Tables']['sites']['Row'];
+
+class SitesService extends BaseService<'sites'> {
   constructor() {
     super('sites');
   }
@@ -11,9 +14,9 @@ class SitesService extends BaseService<SiteServiceType> {
   /**
    * Get sites for the current user
    */
-  async getUserSites(): Promise<ApiResponse<SiteServiceType[]>> {
+  async getUserSites(): Promise<ApiResponse<SiteRow[]>> {
     try {
-      const result = await withTimeout<SiteServiceType[]>(
+      const result = await withTimeout<SiteRow[]>(
         supabase
           .from(this.tableName)
           .select('*')

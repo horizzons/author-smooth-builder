@@ -1,9 +1,18 @@
 
 import { BaseService } from './baseService';
-import { ProfileService, ApiResponse } from '../types';
-import { supabase, withTimeout, errorInterceptor, SupabaseQueryResult } from '../client';
+import { ApiResponse } from '../types';
+import { supabase, withTimeout, errorInterceptor } from '../client';
+import { Database } from '@/integrations/supabase/types';
+import { User } from '@/types/auth';
 
-class ProfilesService extends BaseService<ProfileService> {
+type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
+
+interface ProfileWithUser extends ProfileRow {
+  user: User | null;
+}
+
+class ProfilesService extends BaseService<'profiles'> {
   constructor() {
     super('profiles');
   }
@@ -11,7 +20,7 @@ class ProfilesService extends BaseService<ProfileService> {
   /**
    * Get the current user's profile
    */
-  async getCurrentProfile(): Promise<ApiResponse<ProfileService>> {
+  async getCurrentProfile(): Promise<ApiResponse<ProfileWithUser>> {
     try {
       const { data: session } = await supabase.auth.getSession();
       
@@ -21,7 +30,7 @@ class ProfilesService extends BaseService<ProfileService> {
       
       const userId = session.session.user.id;
       
-      const result = await withTimeout<any>(
+      const result = await withTimeout<ProfileRow>(
         supabase
           .from(this.tableName)
           .select('*')
@@ -31,12 +40,9 @@ class ProfilesService extends BaseService<ProfileService> {
 
       if (result.error) throw result.error;
 
-      // Transform to match ProfileService type
-      const profile: ProfileService = {
-        id: result.data.id,
-        firstName: result.data.first_name,
-        lastName: result.data.last_name,
-        avatarUrl: result.data.avatar_url,
+      // Transform to match ProfileWithUser type
+      const profile: ProfileWithUser = {
+        ...result.data,
         user: session.session.user ? {
           id: session.session.user.id,
           email: session.session.user.email || '',
@@ -57,7 +63,11 @@ class ProfilesService extends BaseService<ProfileService> {
    * Update the current user's profile
    * @param profile Profile data to update
    */
-  async updateProfile(profile: Partial<ProfileService>): Promise<ApiResponse<ProfileService>> {
+  async updateProfile(profileData: { 
+    firstName?: string; 
+    lastName?: string; 
+    avatarUrl?: string; 
+  }): Promise<ApiResponse<ProfileWithUser>> {
     try {
       const { data: session } = await supabase.auth.getSession();
       
@@ -66,13 +76,13 @@ class ProfilesService extends BaseService<ProfileService> {
       }
       
       // Transform to match database column names
-      const dbProfile = {
-        first_name: profile.firstName,
-        last_name: profile.lastName,
-        avatar_url: profile.avatarUrl,
+      const dbProfile: ProfileUpdate = {
+        first_name: profileData.firstName,
+        last_name: profileData.lastName,
+        avatar_url: profileData.avatarUrl,
       };
       
-      const result = await withTimeout<any>(
+      const result = await withTimeout<ProfileRow>(
         supabase
           .from(this.tableName)
           .update(dbProfile)
@@ -83,12 +93,9 @@ class ProfilesService extends BaseService<ProfileService> {
 
       if (result.error) throw result.error;
 
-      // Transform to match ProfileService type
-      const updatedProfile: ProfileService = {
-        id: result.data.id,
-        firstName: result.data.first_name,
-        lastName: result.data.last_name,
-        avatarUrl: result.data.avatar_url,
+      // Transform to match ProfileWithUser type
+      const updatedProfile: ProfileWithUser = {
+        ...result.data,
         user: session.session.user ? {
           id: session.session.user.id,
           email: session.session.user.email || '',

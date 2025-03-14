@@ -8,35 +8,6 @@ export interface ApiResponse<T> {
   error: Error | null;
 }
 
-// Define service types based on database tables
-export type SiteService = Database['public']['Tables']['sites']['Row'];
-export type PageService = Database['public']['Tables']['pages']['Row'];
-export type BookService = Database['public']['Tables']['books']['Row'];
-export type AssetService = Database['public']['Tables']['assets']['Row'];
-export type BlogPostService = Database['public']['Tables']['blog_posts']['Row'];
-export type SeriesService = Database['public']['Tables']['series']['Row'];
-export type TemplateService = Database['public']['Tables']['templates']['Row'];
-
-// User profile service type
-export interface ProfileService {
-  id: string;
-  firstName: string | null;
-  lastName: string | null;
-  avatarUrl: string | null;
-  user: User | null;
-}
-
-// Pagination parameters
-export interface PaginationParams {
-  page?: number;
-  pageSize?: number;
-}
-
-// Filter parameters
-export interface FilterParams {
-  [key: string]: any;
-}
-
 // API error types
 export enum ApiErrorType {
   AUTH = 'auth',
@@ -60,4 +31,35 @@ export class ApiError extends Error {
     this.status = status;
     this.data = data;
   }
+}
+
+// Direct database types (for reference only - we'll use the Database type directly)
+export type SiteService = Database['public']['Tables']['sites']['Row'];
+export type PageService = Database['public']['Tables']['pages']['Row'];
+export type BookService = Database['public']['Tables']['books']['Row'];
+export type AssetService = Database['public']['Tables']['assets']['Row'];
+export type BlogPostService = Database['public']['Tables']['blog_posts']['Row'];
+export type SeriesService = Database['public']['Tables']['series']['Row'];
+export type TemplateService = Database['public']['Tables']['templates']['Row'];
+
+// Define interface for profile with user data
+export interface ProfileService {
+  id: string;
+  first_name: string | null;
+  last_name: string | null; 
+  avatar_url: string | null;
+  created_at: string;
+  updated_at: string;
+  user?: User | null;
+}
+
+// Pagination parameters
+export interface PaginationParams {
+  page?: number;
+  pageSize?: number;
+}
+
+// Filter parameters
+export interface FilterParams {
+  [key: string]: any;
 }

@@ -1,9 +1,12 @@
 
 import { BaseService } from './baseService';
-import { TemplateService as TemplateServiceType, ApiResponse } from '../types';
+import { ApiResponse } from '../types';
 import { supabase, withTimeout, errorInterceptor } from '../client';
+import { Database } from '@/integrations/supabase/types';
 
-class TemplatesService extends BaseService<TemplateServiceType> {
+type TemplateRow = Database['public']['Tables']['templates']['Row'];
+
+class TemplatesService extends BaseService<'templates'> {
   constructor() {
     super('templates');
   }
@@ -11,9 +14,9 @@ class TemplatesService extends BaseService<TemplateServiceType> {
   /**
    * Get all templates
    */
-  async getAllTemplates(): Promise<ApiResponse<TemplateServiceType[]>> {
+  async getAllTemplates(): Promise<ApiResponse<TemplateRow[]>> {
     try {
-      const result = await withTimeout<TemplateServiceType[]>(
+      const result = await withTimeout<TemplateRow[]>(
         supabase
           .from(this.tableName)
           .select('*')
@@ -33,9 +36,9 @@ class TemplatesService extends BaseService<TemplateServiceType> {
    * Get templates by category
    * @param category Template category
    */
-  async getTemplatesByCategory(category: string): Promise<ApiResponse<TemplateServiceType[]>> {
+  async getTemplatesByCategory(category: string): Promise<ApiResponse<TemplateRow[]>> {
     try {
-      const result = await withTimeout<TemplateServiceType[]>(
+      const result = await withTimeout<TemplateRow[]>(
         supabase
           .from(this.tableName)
           .select('*')
@@ -46,30 +49,6 @@ class TemplatesService extends BaseService<TemplateServiceType> {
       if (result.error) throw result.error;
 
       return { data: result.data, error: null };
-    } catch (error: any) {
-      errorInterceptor(error);
-      return { data: null, error };
-    }
-  }
-
-  /**
-   * Get template categories
-   */
-  async getTemplateCategories(): Promise<ApiResponse<string[]>> {
-    try {
-      const result = await withTimeout<any[]>(
-        supabase
-          .from(this.tableName)
-          .select('category')
-          .order('category')
-      );
-
-      if (result.error) throw result.error;
-
-      // Extract unique categories
-      const categories = [...new Set(result.data.map(item => item.category))];
-      
-      return { data: categories, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
