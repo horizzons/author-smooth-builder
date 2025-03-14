@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -11,6 +11,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { session } = useAuth();
   const location = useLocation();
 
+  // Add debugging logs
+  useEffect(() => {
+    console.log('ProtectedRoute rendering with session state:', {
+      isLoading: session.isLoading,
+      hasUser: !!session.user,
+      location: location.pathname
+    });
+  }, [session, location]);
+
   if (session.isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -20,6 +29,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!session.user) {
+    console.log('No user found, redirecting to /auth');
     // Save the location the user was trying to access
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }

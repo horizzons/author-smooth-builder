@@ -1,15 +1,21 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Save, Undo, Redo, Eye, Settings, Layers } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import EditorSidebar from './EditorSidebar';
 import EditorCanvas from './EditorCanvas';
 import EditorProperties from './EditorProperties';
 
 const EditorLayout: React.FC = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    console.log('EditorLayout mounted at path:', location.pathname);
+  }, [location]);
+
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Editor Header */}

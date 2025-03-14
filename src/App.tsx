@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { TRPCProviders } from './lib/trpc/providers';
 import Header from './components/Header';
@@ -18,7 +18,7 @@ function App() {
     <TRPCProviders>
       <AuthProvider>
         <ErrorBoundary>
-          <Router>
+          <Router basename="/">
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-1">
@@ -30,7 +30,7 @@ function App() {
                       <Dashboard />
                     </ProtectedRoute>
                   } />
-                  <Route path="/editor" element={
+                  <Route path="/editor/*" element={
                     <ProtectedRoute>
                       <EditorLayout />
                     </ProtectedRoute>

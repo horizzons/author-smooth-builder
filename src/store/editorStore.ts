@@ -1,8 +1,10 @@
 
 import { create } from 'zustand';
+import { nanoid } from 'nanoid';
 
+// Types for Editor Store
+export type ComponentType = 'heading' | 'paragraph' | 'image' | 'section' | 'container';
 export type ViewMode = 'desktop' | 'tablet' | 'mobile';
-export type ComponentType = 'layout' | 'text' | 'media' | 'interactive';
 
 export interface Component {
   id: string;
@@ -15,243 +17,110 @@ export interface Component {
 export interface Page {
   id: string;
   name: string;
-  slug: string;
+  path: string;
   components: Component[];
 }
 
-interface EditorState {
-  // Current state
+interface EditorStore {
+  pages: Page[];
   currentPageId: string | null;
-  selectedComponentId: string | null;
   viewMode: ViewMode;
   isDragging: boolean;
   
-  // Content
-  pages: Page[];
-  
-  // History
-  history: Page[][];
-  historyIndex: number;
-  
   // Actions
-  setCurrentPage: (pageId: string) => void;
-  setSelectedComponent: (componentId: string | null) => void;
+  addPage: (page: Omit<Page, 'id'>) => void;
+  setCurrentPage: (id: string) => void;
   setViewMode: (mode: ViewMode) => void;
+  addComponent: (component: Component) => void;
+  updateComponent: (id: string, props: Partial<Component>) => void;
+  removeComponent: (id: string) => void;
   setDragging: (isDragging: boolean) => void;
-  
-  // Component operations
-  addComponent: (component: Component, parentId?: string, index?: number) => void;
-  updateComponent: (componentId: string, props: Partial<Component>) => void;
-  deleteComponent: (componentId: string) => void;
-  
-  // History operations
-  undo: () => void;
-  redo: () => void;
-  saveState: () => void;
 }
 
-export const useEditorStore = create<EditorState>((set, get) => ({
-  // Current state
-  currentPageId: null,
-  selectedComponentId: null,
+// Create default homepage
+const defaultHomePage: Page = {
+  id: nanoid(),
+  name: 'Home',
+  path: '/',
+  components: []
+};
+
+// Create the store with default values
+export const useEditorStore = create<EditorStore>((set) => ({
+  pages: [defaultHomePage],
+  currentPageId: defaultHomePage.id,
   viewMode: 'desktop',
   isDragging: false,
   
-  // Content
-  pages: [
-    {
-      id: 'home',
-      name: 'Home',
-      slug: 'home',
-      components: []
-    }
-  ],
+  addPage: (page) => set((state) => ({ 
+    pages: [...state.pages, { ...page, id: nanoid() }] 
+  })),
   
-  // History
-  history: [],
-  historyIndex: -1,
+  setCurrentPage: (id) => set({ currentPageId: id }),
   
-  // Actions
-  setCurrentPage: (pageId) => {
-    set({ currentPageId: pageId });
-  },
+  setViewMode: (mode) => set({ viewMode: mode }),
   
-  setSelectedComponent: (componentId) => {
-    set({ selectedComponentId: componentId });
-  },
-  
-  setViewMode: (mode) => {
-    set({ viewMode: mode });
-  },
-  
-  setDragging: (isDragging) => {
-    set({ isDragging });
-  },
-  
-  // Component operations
-  addComponent: (component, parentId, index) => {
-    set((state) => {
-      const { pages, currentPageId } = state;
-      if (!currentPageId) return state;
-      
-      const newPages = [...pages];
-      const pageIndex = newPages.findIndex(p => p.id === currentPageId);
-      if (pageIndex === -1) return state;
-      
-      const page = newPages[pageIndex];
-      
-      // If no parent specified, add to root
-      if (!parentId) {
-        if (index !== undefined) {
-          page.components.splice(index, 0, component);
-        } else {
-          page.components.push(component);
-        }
-      } else {
-        // Add to specified parent
-        const addToParent = (components: Component[]) => {
-          for (let i = 0; i < components.length; i++) {
-            if (components[i].id === parentId) {
-              if (!components[i].children) components[i].children = [];
-              if (index !== undefined) {
-                components[i].children.splice(index, 0, component);
-              } else {
-                components[i].children.push(component);
-              }
-              return true;
-            }
-            if (components[i].children && addToParent(components[i].children)) {
-              return true;
-            }
-          }
-          return false;
-        };
-        
-        addToParent(page.components);
-      }
-      
-      return { pages: newPages };
-    });
+  addComponent: (component) => set((state) => {
+    // Find current page
+    const pageIndex = state.pages.findIndex(p => p.id === state.currentPageId);
+    if (pageIndex === -1) return state;
     
-    get().saveState();
-  },
-  
-  updateComponent: (componentId, props) => {
-    set((state) => {
-      const { pages, currentPageId } = state;
-      if (!currentPageId) return state;
-      
-      const newPages = [...pages];
-      const pageIndex = newPages.findIndex(p => p.id === currentPageId);
-      if (pageIndex === -1) return state;
-      
-      const page = newPages[pageIndex];
-      
-      const updateInComponents = (components: Component[]) => {
-        for (let i = 0; i < components.length; i++) {
-          if (components[i].id === componentId) {
-            components[i] = { ...components[i], ...props };
-            return true;
-          }
-          if (components[i].children && updateInComponents(components[i].children)) {
-            return true;
-          }
-        }
-        return false;
-      };
-      
-      updateInComponents(page.components);
-      
-      return { pages: newPages };
-    });
+    // Create a new array of pages with the updated page
+    const updatedPages = [...state.pages];
+    updatedPages[pageIndex] = {
+      ...updatedPages[pageIndex],
+      components: [...updatedPages[pageIndex].components, component]
+    };
     
-    get().saveState();
-  },
+    return { pages: updatedPages };
+  }),
   
-  deleteComponent: (componentId) => {
-    set((state) => {
-      const { pages, currentPageId } = state;
-      if (!currentPageId) return state;
-      
-      const newPages = [...pages];
-      const pageIndex = newPages.findIndex(p => p.id === currentPageId);
-      if (pageIndex === -1) return state;
-      
-      const page = newPages[pageIndex];
-      
-      const deleteFromComponents = (components: Component[]) => {
-        for (let i = 0; i < components.length; i++) {
-          if (components[i].id === componentId) {
-            components.splice(i, 1);
-            return true;
-          }
-          if (components[i].children) {
-            const deleted = deleteFromComponents(components[i].children);
-            if (deleted) return true;
-          }
-        }
-        return false;
-      };
-      
-      deleteFromComponents(page.components);
-      
-      return { 
-        pages: newPages,
-        selectedComponentId: null 
-      };
-    });
+  updateComponent: (id, props) => set((state) => {
+    // Find current page
+    const pageIndex = state.pages.findIndex(p => p.id === state.currentPageId);
+    if (pageIndex === -1) return state;
     
-    get().saveState();
-  },
+    // Create a copy of the components array
+    const updatedComponents = [...state.pages[pageIndex].components];
+    
+    // Find the component and update it
+    const componentIndex = updatedComponents.findIndex(c => c.id === id);
+    if (componentIndex === -1) return state;
+    
+    updatedComponents[componentIndex] = {
+      ...updatedComponents[componentIndex],
+      ...props
+    };
+    
+    // Create a new array of pages with the updated page
+    const updatedPages = [...state.pages];
+    updatedPages[pageIndex] = {
+      ...updatedPages[pageIndex],
+      components: updatedComponents
+    };
+    
+    return { pages: updatedPages };
+  }),
   
-  // History operations
-  undo: () => {
-    set((state) => {
-      const { history, historyIndex } = state;
-      if (historyIndex <= 0) return state;
-      
-      const newIndex = historyIndex - 1;
-      const newPages = JSON.parse(JSON.stringify(history[newIndex]));
-      
-      return {
-        pages: newPages,
-        historyIndex: newIndex
-      };
-    });
-  },
+  removeComponent: (id) => set((state) => {
+    // Find current page
+    const pageIndex = state.pages.findIndex(p => p.id === state.currentPageId);
+    if (pageIndex === -1) return state;
+    
+    // Filter out the component
+    const updatedComponents = state.pages[pageIndex].components.filter(c => c.id !== id);
+    
+    // Create a new array of pages with the updated page
+    const updatedPages = [...state.pages];
+    updatedPages[pageIndex] = {
+      ...updatedPages[pageIndex],
+      components: updatedComponents
+    };
+    
+    return { pages: updatedPages };
+  }),
   
-  redo: () => {
-    set((state) => {
-      const { history, historyIndex } = state;
-      if (historyIndex >= history.length - 1) return state;
-      
-      const newIndex = historyIndex + 1;
-      const newPages = JSON.parse(JSON.stringify(history[newIndex]));
-      
-      return {
-        pages: newPages,
-        historyIndex: newIndex
-      };
-    });
-  },
-  
-  saveState: () => {
-    set((state) => {
-      const { pages, history, historyIndex } = state;
-      
-      // Create a new history entry
-      const newHistory = history.slice(0, historyIndex + 1);
-      newHistory.push(JSON.parse(JSON.stringify(pages)));
-      
-      // Limit history size (optional)
-      if (newHistory.length > 30) {
-        newHistory.shift();
-      }
-      
-      return {
-        history: newHistory,
-        historyIndex: newHistory.length - 1
-      };
-    });
-  }
+  setDragging: (isDragging) => set({ isDragging })
 }));
+
+export default useEditorStore;
