@@ -31,16 +31,11 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<AuthPage />} />
-                  <Route path="/dashboard" element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/editor/*" element={
-                    <ProtectedRoute>
-                      <EditorLayout />
-                    </ProtectedRoute>
-                  } />
+                  
+                  {/* No longer using protected routes for dashboard and editor */}
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/editor/*" element={<EditorLayout />} />
+                  
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>

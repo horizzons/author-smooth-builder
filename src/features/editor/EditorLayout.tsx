@@ -13,40 +13,20 @@ import EditorProperties from './EditorProperties';
 const EditorLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { pages, currentPageId, initialized } = useEditorStore();
   
+  // Initialize with default empty values to prevent errors
+  const editorStore = useEditorStore();
+  const pages = editorStore.pages || [];
+  const currentPageId = editorStore.currentPageId;
+  
+  // For debugging
   useEffect(() => {
     console.log('EditorLayout mounted at path:', location.pathname);
     console.log('Editor store state:', { 
       pagesCount: pages.length,
-      currentPageId,
-      initialized
+      currentPageId
     });
-    
-    // Initialize the editor if needed
-    if (!initialized) {
-      useEditorStore.getState().initialize();
-    }
-    
-    // Redirect if needed
-    if (initialized && pages.length === 0) {
-      console.log('No pages found, editor may need initialization');
-    }
-  }, [location, pages, currentPageId, initialized]);
-
-  // For debugging purposes
-  if (!initialized) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="mb-4">
-            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-          </div>
-          <p className="text-muted-foreground">Initializing editor...</p>
-        </div>
-      </div>
-    );
-  }
+  }, [location, pages, currentPageId]);
 
   return (
     <div className="h-screen flex flex-col bg-background">
