@@ -15,6 +15,8 @@ export enum ApiErrorType {
   SERVER = 'server',
   TIMEOUT = 'timeout',
   NETWORK = 'network',
+  NOT_FOUND = 'not_found',
+  CONFLICT = 'conflict',
   UNKNOWN = 'unknown'
 }
 
@@ -57,4 +59,10 @@ export interface PaginationParams {
 // Filter parameters
 export interface FilterParams {
   [key: string]: any;
+}
+
+// Asset Upload parameters
+export interface AssetUploadParams {
+  siteId: string;
+  file: File;
 }

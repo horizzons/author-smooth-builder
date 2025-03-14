@@ -18,6 +18,22 @@ const t = initTRPC.context<Context>().create({
       errorType = ApiErrorType.TIMEOUT;
     } else if (error.code === 'INTERNAL_SERVER_ERROR') {
       errorType = ApiErrorType.SERVER;
+    } else if (error.code === 'NOT_FOUND') {
+      errorType = ApiErrorType.NOT_FOUND;
+    } else if (error.code === 'CONFLICT') {
+      errorType = ApiErrorType.CONFLICT;
+    } else if (error.code === 'PARSE_ERROR') {
+      errorType = ApiErrorType.VALIDATION;
+    }
+    
+    // Format the error message
+    let errorMessage = error.message;
+    
+    // Handle Zod validation errors specifically
+    if (error.code === 'BAD_REQUEST' && error.cause instanceof ZodError) {
+      errorMessage = error.cause.errors.map(err => 
+        `${err.path.join('.')}: ${err.message}`
+      ).join(', ');
     }
     
     return {
@@ -25,8 +41,9 @@ const t = initTRPC.context<Context>().create({
       data: {
         ...shape.data,
         type: errorType,
-        message: error.message,
+        message: errorMessage,
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        zodErrors: error.cause instanceof ZodError ? error.cause.format() : undefined,
       },
     };
   },
@@ -62,7 +79,13 @@ const isAdmin = middleware(async ({ next, ctx }) => {
   
   // Check if user is admin here - this is a placeholder
   // You would implement proper role checking based on your database schema
-  const isUserAdmin = false; // Replace with actual admin check
+  const { data, error } = await ctx.supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', ctx.user.id)
+    .maybeSingle();
+    
+  const isUserAdmin = data?.role === 'admin';
   
   if (!isUserAdmin) {
     throw new TRPCError({

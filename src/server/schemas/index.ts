@@ -48,3 +48,12 @@ export const templateFilterSchema = z.object({
   category: z.string().optional(),
   isPremium: z.boolean().optional(),
 });
+
+// Asset-related schemas
+export const assetSchema = z.object({
+  siteId: z.string().uuid(),
+  fileBase64: z.string(),
+  fileName: z.string(),
+  fileType: z.string(),
+  fileSize: z.number().optional(),
+});
