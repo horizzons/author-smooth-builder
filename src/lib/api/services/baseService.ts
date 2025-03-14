@@ -42,8 +42,13 @@ export class BaseService<T extends TableName> {
    */
   async getById(id: string): Promise<ApiResponse<TableRow<T>>> {
     try {
+      // Use type assertion for the column name
       const result = await withTimeout<TableRow<T>>(
-        supabase.from(this.tableName).select('*').eq('id', id).maybeSingle()
+        supabase
+          .from(this.tableName)
+          .select('*')
+          .eq('id' as any, id)
+          .maybeSingle()
       );
 
       if (result.error) throw result.error;
@@ -89,7 +94,7 @@ export class BaseService<T extends TableName> {
         supabase
           .from(this.tableName)
           .update(record as any)
-          .eq('id', id)
+          .eq('id' as any, id)
           .select()
           .maybeSingle()
       );
@@ -110,7 +115,10 @@ export class BaseService<T extends TableName> {
   async delete(id: string): Promise<ApiResponse<null>> {
     try {
       const result = await withTimeout<null>(
-        supabase.from(this.tableName).delete().eq('id', id)
+        supabase
+          .from(this.tableName)
+          .delete()
+          .eq('id' as any, id)
       );
 
       if (result.error) throw result.error;
@@ -133,7 +141,7 @@ export class BaseService<T extends TableName> {
       // Apply filters
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          query = query.eq(key, value);
+          query = query.eq(key as any, value);
         }
       });
       
