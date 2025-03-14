@@ -1,44 +1,92 @@
 
 import { router, publicProcedure } from '../trpc';
-import { z } from 'zod';
+import { idSchema, templateFilterSchema } from '../schemas';
+import { TRPCError } from '@trpc/server';
 
 export const templatesRouter = router({
   // Get all templates
-  getTemplates: publicProcedure.query(async ({ ctx }) => {
-    const { data, error } = await ctx.supabase
-      .from('templates')
-      .select('*')
-      .order('name');
+  getTemplates: publicProcedure
+    .input(templateFilterSchema.optional())
+    .query(async ({ ctx, input }) => {
+      try {
+        let query = ctx.supabase
+          .from('templates')
+          .select('*')
+          .order('name');
+          
+        // Apply filters if provided
+        if (input?.category) {
+          query = query.eq('category', input.category);
+        }
+        
+        if (input?.isPremium !== undefined) {
+          query = query.eq('is_premium', input.isPremium);
+        }
 
-    if (error) throw error;
-    return data;
-  }),
+        const { data, error } = await query;
+
+        if (error) throw error;
+        return data;
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message || 'Failed to fetch templates',
+          cause: error,
+        });
+      }
+    }),
 
   // Get template by ID
   getTemplateById: publicProcedure
-    .input(z.object({ id: z.string() }))
+    .input(idSchema)
     .query(async ({ ctx, input }) => {
-      const { data, error } = await ctx.supabase
-        .from('templates')
-        .select('*')
-        .eq('id', input.id)
-        .maybeSingle();
+      try {
+        const { data, error } = await ctx.supabase
+          .from('templates')
+          .select('*')
+          .eq('id', input.id)
+          .maybeSingle();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        
+        if (!data) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Template not found',
+          });
+        }
+        
+        return data;
+      } catch (error: any) {
+        if (error instanceof TRPCError) throw error;
+        
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message || 'Failed to fetch template',
+          cause: error,
+        });
+      }
     }),
 
   // Get templates by category
   getTemplatesByCategory: publicProcedure
     .input(z.object({ category: z.string() }))
     .query(async ({ ctx, input }) => {
-      const { data, error } = await ctx.supabase
-        .from('templates')
-        .select('*')
-        .eq('category', input.category)
-        .order('name');
+      try {
+        const { data, error } = await ctx.supabase
+          .from('templates')
+          .select('*')
+          .eq('category', input.category)
+          .order('name');
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message || 'Failed to fetch templates by category',
+          cause: error,
+        });
+      }
     }),
 });
