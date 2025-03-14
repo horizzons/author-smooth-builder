@@ -18,7 +18,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     });
   }, [location.pathname]);
 
-  // Authentication is disabled - render children directly without any checks
+  // Authentication is completely disabled - render children directly
   return <>{children}</>;
 };
 

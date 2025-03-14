@@ -31,7 +31,10 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<AuthPage />} />
+                  
+                  {/* Dashboard and Editor should be accessible without auth for now */}
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/editor" element={<EditorLayout />} />
                   <Route path="/editor/*" element={<EditorLayout />} />
                   
                   {/* Redirect any undefined routes to 404 page */}

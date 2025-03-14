@@ -14,19 +14,27 @@ const EditorLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Initialize with default empty values to prevent errors
+  // Get the editor store and initialize it if not already done
   const editorStore = useEditorStore();
-  const pages = editorStore.pages || [];
-  const currentPageId = editorStore.currentPageId;
+  const { initialize, initialized, pages, currentPageId } = editorStore;
+  
+  // Initialize the editor store if not already initialized
+  useEffect(() => {
+    if (!initialized) {
+      console.log('Initializing editor store from EditorLayout');
+      initialize();
+    }
+  }, [initialized, initialize]);
   
   // For debugging
   useEffect(() => {
     console.log('EditorLayout mounted at path:', location.pathname);
     console.log('Editor store state:', { 
+      initialized,
       pagesCount: pages.length,
       currentPageId
     });
-  }, [location, pages, currentPageId]);
+  }, [location, pages, currentPageId, initialized]);
 
   return (
     <div className="h-screen flex flex-col bg-background">
