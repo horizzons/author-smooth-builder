@@ -21,7 +21,7 @@ class ProfilesService extends BaseService<ProfileService> {
       
       const userId = session.session.user.id;
       
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase
           .from(this.tableName as 'profiles')
           .select('*')
@@ -29,20 +29,20 @@ class ProfilesService extends BaseService<ProfileService> {
           .maybeSingle()
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
       // Transform to match ProfileService type
       const profile: ProfileService = {
-        id: data.id,
-        firstName: data.first_name,
-        lastName: data.last_name,
-        avatarUrl: data.avatar_url,
+        id: result.data.id,
+        firstName: result.data.first_name,
+        lastName: result.data.last_name,
+        avatarUrl: result.data.avatar_url,
         user: session.session.user ? {
           id: session.session.user.id,
           email: session.session.user.email || '',
-          firstName: data.first_name || undefined,
-          lastName: data.last_name || undefined,
-          avatarUrl: data.avatar_url || undefined,
+          firstName: result.data.first_name || undefined,
+          lastName: result.data.last_name || undefined,
+          avatarUrl: result.data.avatar_url || undefined,
         } : null
       };
 
@@ -72,7 +72,7 @@ class ProfilesService extends BaseService<ProfileService> {
         avatar_url: profile.avatarUrl,
       };
       
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase
           .from(this.tableName as 'profiles')
           .update(dbProfile)
@@ -81,20 +81,20 @@ class ProfilesService extends BaseService<ProfileService> {
           .maybeSingle()
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
       // Transform to match ProfileService type
       const updatedProfile: ProfileService = {
-        id: data.id,
-        firstName: data.first_name,
-        lastName: data.last_name,
-        avatarUrl: data.avatar_url,
+        id: result.data.id,
+        firstName: result.data.first_name,
+        lastName: result.data.last_name,
+        avatarUrl: result.data.avatar_url,
         user: session.session.user ? {
           id: session.session.user.id,
           email: session.session.user.email || '',
-          firstName: data.first_name || undefined,
-          lastName: data.last_name || undefined,
-          avatarUrl: data.avatar_url || undefined,
+          firstName: result.data.first_name || undefined,
+          lastName: result.data.last_name || undefined,
+          avatarUrl: result.data.avatar_url || undefined,
         } : null
       };
 

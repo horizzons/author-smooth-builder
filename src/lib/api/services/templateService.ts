@@ -14,16 +14,16 @@ class TemplatesService extends BaseService<TemplateService> {
    */
   async getTemplatesByCategory(category: string): Promise<ApiResponse<TemplateService[]>> {
     try {
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase
           .from(this.tableName as 'templates')
           .select('*')
           .eq('category', category)
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return { data, error: null };
+      return { data: result.data, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -35,16 +35,16 @@ class TemplatesService extends BaseService<TemplateService> {
    */
   async getFreeTemplates(): Promise<ApiResponse<TemplateService[]>> {
     try {
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase
           .from(this.tableName as 'templates')
           .select('*')
           .eq('is_premium', false)
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return { data, error: null };
+      return { data: result.data, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -56,16 +56,16 @@ class TemplatesService extends BaseService<TemplateService> {
    */
   async getPremiumTemplates(): Promise<ApiResponse<TemplateService[]>> {
     try {
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase
           .from(this.tableName as 'templates')
           .select('*')
           .eq('is_premium', true)
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return { data, error: null };
+      return { data: result.data, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };

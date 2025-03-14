@@ -18,13 +18,13 @@ export class BaseService<T> {
    */
   async getAll(): Promise<ApiResponse<T[]>> {
     try {
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase.from(this.tableName).select('*')
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return { data, error: null };
+      return { data: result.data as T[], error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -37,13 +37,13 @@ export class BaseService<T> {
    */
   async getById(id: string): Promise<ApiResponse<T>> {
     try {
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase.from(this.tableName).select('*').eq('id', id).maybeSingle()
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return { data, error: null };
+      return { data: result.data as T, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -56,13 +56,13 @@ export class BaseService<T> {
    */
   async create(record: any): Promise<ApiResponse<T>> {
     try {
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase.from(this.tableName).insert(record).select().maybeSingle()
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return { data, error: null };
+      return { data: result.data as T, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -76,13 +76,13 @@ export class BaseService<T> {
    */
   async update(id: string, record: any): Promise<ApiResponse<T>> {
     try {
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase.from(this.tableName).update(record).eq('id', id).select().maybeSingle()
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return { data, error: null };
+      return { data: result.data as T, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -95,11 +95,11 @@ export class BaseService<T> {
    */
   async delete(id: string): Promise<ApiResponse<null>> {
     try {
-      const { error } = await withTimeout(
+      const result = await withTimeout(
         supabase.from(this.tableName).delete().eq('id', id)
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
       return { data: null, error: null };
     } catch (error: any) {
@@ -123,11 +123,11 @@ export class BaseService<T> {
         }
       });
       
-      const { data, error } = await withTimeout(query);
+      const result = await withTimeout(query);
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return { data, error: null };
+      return { data: result.data as T[], error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };

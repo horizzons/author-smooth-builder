@@ -1,7 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { PostgrestFilterBuilder, PostgrestBuilder } from '@supabase/supabase-js';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 // API request timeout in milliseconds
 const DEFAULT_TIMEOUT = 30000;
@@ -55,17 +55,17 @@ const errorInterceptor = async (error: any) => {
 
 /**
  * API timeout handler that works with Supabase queries
- * @param promise Promise or PostgrestBuilder to wrap with timeout
+ * @param promise Promise or Supabase query to wrap with timeout
  * @param timeout Timeout in milliseconds
  */
 const withTimeout = <T>(
-  queryBuilder: Promise<T> | PostgrestFilterBuilder<any, any, any> | PostgrestBuilder<any, any>,
+  queryBuilder: Promise<T> | ReturnType<SupabaseClient['from']> | any,
   timeout = DEFAULT_TIMEOUT
 ): Promise<T> => {
-  // If the queryBuilder is already a Promise, just add the timeout
-  const queryPromise = 'then' in queryBuilder 
-    ? queryBuilder as Promise<T>
-    : (queryBuilder as PostgrestFilterBuilder<any, any, any> | PostgrestBuilder<any, any>).then();
+  // If the queryBuilder is a Supabase query, call .then() to convert it to a Promise
+  const queryPromise = queryBuilder && typeof queryBuilder.then === 'function' 
+    ? queryBuilder 
+    : queryBuilder.then();
   
   const timeoutPromise = new Promise<T>((_, reject) => {
     setTimeout(() => {

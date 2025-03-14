@@ -13,16 +13,16 @@ class SitesService extends BaseService<SiteService> {
    */
   async getUserSites(): Promise<ApiResponse<SiteService[]>> {
     try {
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase
           .from(this.tableName as 'sites')
           .select('*')
           .order('created_at', { ascending: false })
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return { data, error: null };
+      return { data: result.data, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
@@ -35,7 +35,7 @@ class SitesService extends BaseService<SiteService> {
    */
   async checkSubdomainAvailability(subdomain: string): Promise<ApiResponse<boolean>> {
     try {
-      const { data, error } = await withTimeout(
+      const result = await withTimeout(
         supabase
           .from(this.tableName as 'sites')
           .select('id')
@@ -43,9 +43,9 @@ class SitesService extends BaseService<SiteService> {
           .maybeSingle()
       );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return { data: !data, error: null };
+      return { data: !result.data, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };
