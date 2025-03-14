@@ -9,7 +9,310 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      assets: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          site_id: string
+          size: number | null
+          type: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          site_id: string
+          size?: number | null
+          type: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          site_id?: string
+          size?: number | null
+          type?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_posts: {
+        Row: {
+          content: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          is_published: boolean | null
+          published_at: string | null
+          site_id: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean | null
+          published_at?: string | null
+          site_id: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean | null
+          published_at?: string | null
+          site_id?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      books: {
+        Row: {
+          author: string
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          isbn: string | null
+          publication_date: string | null
+          purchase_links: Json | null
+          series_id: string | null
+          site_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author: string
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          isbn?: string | null
+          publication_date?: string | null
+          purchase_links?: Json | null
+          series_id?: string | null
+          site_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          isbn?: string | null
+          publication_date?: string | null
+          purchase_links?: Json | null
+          series_id?: string | null
+          site_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "books_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pages: {
+        Row: {
+          content: Json | null
+          created_at: string
+          id: string
+          is_published: boolean | null
+          meta_description: string | null
+          meta_keywords: string | null
+          site_id: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json | null
+          created_at?: string
+          id?: string
+          is_published?: boolean | null
+          meta_description?: string | null
+          meta_keywords?: string | null
+          site_id: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json | null
+          created_at?: string
+          id?: string
+          is_published?: boolean | null
+          meta_description?: string | null
+          meta_keywords?: string | null
+          site_id?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pages_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      series: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          site_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          site_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          site_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "series_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sites: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          subdomain: string
+          template_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          subdomain: string
+          template_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          subdomain?: string
+          template_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      templates: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_premium: boolean | null
+          name: string
+          thumbnail_url: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_premium?: boolean | null
+          name: string
+          thumbnail_url?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_premium?: boolean | null
+          name?: string
+          thumbnail_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
