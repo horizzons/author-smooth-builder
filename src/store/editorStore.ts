@@ -26,6 +26,7 @@ interface EditorStore {
   currentPageId: string | null;
   viewMode: ViewMode;
   isDragging: boolean;
+  initialized: boolean;
   
   // Actions
   addPage: (page: Omit<Page, 'id'>) => void;
@@ -35,6 +36,7 @@ interface EditorStore {
   updateComponent: (id: string, props: Partial<Component>) => void;
   removeComponent: (id: string) => void;
   setDragging: (isDragging: boolean) => void;
+  initialize: () => void;
 }
 
 // Create default homepage
@@ -51,6 +53,12 @@ export const useEditorStore = create<EditorStore>((set) => ({
   currentPageId: defaultHomePage.id,
   viewMode: 'desktop',
   isDragging: false,
+  initialized: false,
+  
+  initialize: () => {
+    console.log('Initializing editor store');
+    set({ initialized: true });
+  },
   
   addPage: (page) => set((state) => ({ 
     pages: [...state.pages, { ...page, id: nanoid() }] 
