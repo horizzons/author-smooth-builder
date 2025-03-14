@@ -1,24 +1,13 @@
 
-import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React from 'react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const location = useLocation();
-
-  // Log the current route for debugging
-  useEffect(() => {
-    console.log('ProtectedRoute rendering:', {
-      path: location.pathname,
-      bypassingAuth: true,
-      timestamp: new Date().toISOString(),
-    });
-  }, [location.pathname]);
-
-  // Authentication is completely disabled - render children directly
+  // Authentication is completely bypassed for now
+  console.log('ProtectedRoute: Authentication bypassed');
   return <>{children}</>;
 };
 

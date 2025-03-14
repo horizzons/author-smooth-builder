@@ -31,7 +31,7 @@ const EditorLayout: React.FC = () => {
     console.log('EditorLayout mounted at path:', location.pathname);
     console.log('Editor store state:', { 
       initialized,
-      pagesCount: pages.length,
+      pagesCount: pages?.length || 0,
       currentPageId
     });
   }, [location, pages, currentPageId, initialized]);

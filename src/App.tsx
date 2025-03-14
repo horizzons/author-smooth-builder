@@ -11,10 +11,13 @@ import AuthPage from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import EditorLayout from './features/editor/EditorLayout';
+import FeaturePlaceholder from './pages/FeaturePlaceholder';
+import PricingPlaceholder from './pages/PricingPlaceholder';
 import './App.css';
 
 function App() {
   console.log("App rendering, configuring routes");
+  
   return (
     <ErrorBoundary>
       <TRPCProviders>
@@ -29,15 +32,20 @@ function App() {
               
               <main className="flex-1">
                 <Routes>
+                  {/* Core pages */}
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<AuthPage />} />
-                  
-                  {/* Dashboard and Editor should be accessible without auth for now */}
                   <Route path="/dashboard" element={<Dashboard />} />
+                  
+                  {/* Editor routes */}
                   <Route path="/editor" element={<EditorLayout />} />
                   <Route path="/editor/*" element={<EditorLayout />} />
                   
-                  {/* Redirect any undefined routes to 404 page */}
+                  {/* Marketing pages */}
+                  <Route path="/features" element={<FeaturePlaceholder />} />
+                  <Route path="/pricing" element={<PricingPlaceholder />} />
+                  
+                  {/* 404 handling */}
                   <Route path="/not-found" element={<NotFound />} />
                   <Route path="*" element={<Navigate to="/not-found" replace />} />
                 </Routes>
