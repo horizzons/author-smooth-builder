@@ -10,6 +10,7 @@ import Index from './pages/Index';
 import AuthPage from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
+import EditorLayout from './features/editor/EditorLayout';
 import './App.css';
 
 function App() {
@@ -19,19 +20,39 @@ function App() {
         <ErrorBoundary>
           <Router>
             <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-1">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<AuthPage />} />
-                  <Route path="/dashboard" element={
+              <Routes>
+                <Route
+                  path="/editor"
+                  element={
                     <ProtectedRoute>
-                      <Dashboard />
+                      <EditorLayout />
                     </ProtectedRoute>
-                  } />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
+                  }
+                />
+                <Route
+                  path="*"
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <Routes>
+                          <Route path="/" element={<Index />} />
+                          <Route path="/auth" element={<AuthPage />} />
+                          <Route
+                            path="/dashboard"
+                            element={
+                              <ProtectedRoute>
+                                <Dashboard />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </main>
+                    </>
+                  }
+                />
+              </Routes>
             </div>
             <Toaster />
           </Router>
