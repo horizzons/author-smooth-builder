@@ -51,9 +51,12 @@ export function CreateSiteForm() {
   // Example of using our custom mutation hook
   const utils = trpc.useContext();
   
-  // Update to use createSite instead of create
+  // Fix: Use the correct approach for tRPC mutations
   const createSiteMutation = useTrpcMutation(
-    (input) => trpc.sites.createSite.mutate(input),
+    (input) => {
+      const mutation = trpc.sites.createSite.useMutation();
+      return mutation.mutateAsync(input);
+    },
     {
       showSuccessToast: true,
       successMessage: 'Site created successfully!',
