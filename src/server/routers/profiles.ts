@@ -1,7 +1,7 @@
-
 import { router, protectedProcedure } from '../trpc';
 import { updateProfileSchema } from '../schemas';
 import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
 
 export const profilesRouter = router({
   // Get the current user's profile

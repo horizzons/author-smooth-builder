@@ -1,7 +1,7 @@
-
 import { router, publicProcedure } from '../trpc';
 import { idSchema, templateFilterSchema } from '../schemas';
 import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
 
 export const templatesRouter = router({
   // Get all templates
