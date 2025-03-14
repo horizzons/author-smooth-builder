@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { TRPCProviders } from './lib/trpc/providers';
 import Header from './components/Header';
@@ -31,12 +31,12 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<AuthPage />} />
-                  
-                  {/* No longer using protected routes for dashboard and editor */}
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/editor/*" element={<EditorLayout />} />
                   
-                  <Route path="*" element={<NotFound />} />
+                  {/* Redirect any undefined routes to 404 page */}
+                  <Route path="/not-found" element={<NotFound />} />
+                  <Route path="*" element={<Navigate to="/not-found" replace />} />
                 </Routes>
               </main>
             </div>

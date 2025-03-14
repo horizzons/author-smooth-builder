@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
@@ -10,13 +10,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const location = useLocation();
 
   // Log the current route for debugging
-  console.log('ProtectedRoute rendering:', {
-    path: location.pathname,
-    bypassingAuth: true,
-    timestamp: new Date().toISOString(),
-  });
+  useEffect(() => {
+    console.log('ProtectedRoute rendering:', {
+      path: location.pathname,
+      bypassingAuth: true,
+      timestamp: new Date().toISOString(),
+    });
+  }, [location.pathname]);
 
-  // Authentication is temporarily disabled - render children directly
+  // Authentication is disabled - render children directly without any checks
   return <>{children}</>;
 };
 
