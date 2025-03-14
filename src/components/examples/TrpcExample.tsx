@@ -1,13 +1,12 @@
 
 import React, { useState } from 'react';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/lib/trpc/client';
 import { Button } from '@/components/ui/button';
-import { useTrpcMutation, useTrpcQueryState } from '@/hooks/useTrpc';
+import { useTrpcMutation, useTrpcQueryState } from '@/lib/trpc/hooks';
 import { ErrorMessage } from '@/components/ui/error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function SitesList() {
-  // Update to use getUserSites instead of getAll
   const sitesQuery = trpc.sites.getUserSites.useQuery();
   const { isLoading, error, errorMessage } = useTrpcQueryState(sitesQuery);
   
@@ -48,10 +47,8 @@ export function CreateSiteForm() {
   const [name, setName] = useState('');
   const [subdomain, setSubdomain] = useState('');
   
-  // Example of using our custom mutation hook
   const utils = trpc.useContext();
   
-  // Fix: Use the correct approach for tRPC mutations
   const createSiteMutation = useTrpcMutation(
     (input) => {
       const mutation = trpc.sites.createSite.useMutation();
@@ -77,7 +74,6 @@ export function CreateSiteForm() {
       setSubdomain('');
       
       // Invalidate query cache to refresh the sites list
-      // Update to use getUserSites instead of getAll
       utils.sites.getUserSites.invalidate();
     }
   };

@@ -1,11 +1,7 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { httpBatchLink } from '@trpc/client';
-import { useState } from 'react';
-import { trpc } from '@/utils/trpc';
-import superjson from 'superjson';
 import { AuthProvider } from './contexts/AuthContext';
+import { TRPCProviders } from './lib/trpc/providers';
 import Header from './components/Header';
 import { Toaster } from './components/ui/toaster';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -17,63 +13,31 @@ import NotFound from './pages/NotFound';
 import './App.css';
 
 function App() {
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: 1,
-        refetchOnWindowFocus: false,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-      },
-      mutations: {
-        retry: 0,
-      },
-    },
-  }));
-  
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
-      links: [
-        httpBatchLink({
-          url: '/api/trpc',
-          // optional
-          headers: () => {
-            // get auth token from localStorage or similar
-            const token = localStorage.getItem('authToken');
-            return token ? { Authorization: `Bearer ${token}` } : {};
-          },
-        }),
-      ],
-      transformer: superjson,
-    })
-  );
-
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ErrorBoundary>
-            <Router>
-              <div className="flex flex-col min-h-screen">
-                <Header />
-                <main className="flex-1">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/auth" element={<AuthPage />} />
-                    <Route path="/dashboard" element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
-              </div>
-              <Toaster />
-            </Router>
-          </ErrorBoundary>
-        </AuthProvider>
-      </QueryClientProvider>
-    </trpc.Provider>
+    <TRPCProviders>
+      <AuthProvider>
+        <ErrorBoundary>
+          <Router>
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="flex-1">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<AuthPage />} />
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+            </div>
+            <Toaster />
+          </Router>
+        </ErrorBoundary>
+      </AuthProvider>
+    </TRPCProviders>
   );
 }
 
