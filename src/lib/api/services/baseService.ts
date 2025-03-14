@@ -95,7 +95,7 @@ export class BaseService<T> {
    */
   async delete(id: string): Promise<ApiResponse<null>> {
     try {
-      const result = await withTimeout(
+      const result = await withTimeout<null>(
         supabase.from(this.tableName).delete().eq('id', id)
       );
 

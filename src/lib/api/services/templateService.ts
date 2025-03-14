@@ -1,11 +1,32 @@
 
 import { BaseService } from './baseService';
 import { TemplateService, ApiResponse } from '../types';
-import { supabase, withTimeout, errorInterceptor, SupabaseQueryResult } from '../client';
+import { supabase, withTimeout, errorInterceptor } from '../client';
 
 class TemplatesService extends BaseService<TemplateService> {
   constructor() {
     super('templates');
+  }
+
+  /**
+   * Get all templates
+   */
+  async getAllTemplates(): Promise<ApiResponse<TemplateService[]>> {
+    try {
+      const result = await withTimeout<TemplateService[]>(
+        supabase
+          .from(this.tableName)
+          .select('*')
+          .order('name')
+      );
+
+      if (result.error) throw result.error;
+
+      return { data: result.data, error: null };
+    } catch (error: any) {
+      errorInterceptor(error);
+      return { data: null, error };
+    }
   }
 
   /**
@@ -19,6 +40,7 @@ class TemplatesService extends BaseService<TemplateService> {
           .from(this.tableName)
           .select('*')
           .eq('category', category)
+          .order('name')
       );
 
       if (result.error) throw result.error;
@@ -31,41 +53,23 @@ class TemplatesService extends BaseService<TemplateService> {
   }
 
   /**
-   * Get free templates
+   * Get template categories
    */
-  async getFreeTemplates(): Promise<ApiResponse<TemplateService[]>> {
+  async getTemplateCategories(): Promise<ApiResponse<string[]>> {
     try {
-      const result = await withTimeout<TemplateService[]>(
+      const result = await withTimeout<any[]>(
         supabase
           .from(this.tableName)
-          .select('*')
-          .eq('is_premium', false)
+          .select('category')
+          .order('category')
       );
 
       if (result.error) throw result.error;
 
-      return { data: result.data, error: null };
-    } catch (error: any) {
-      errorInterceptor(error);
-      return { data: null, error };
-    }
-  }
-
-  /**
-   * Get premium templates
-   */
-  async getPremiumTemplates(): Promise<ApiResponse<TemplateService[]>> {
-    try {
-      const result = await withTimeout<TemplateService[]>(
-        supabase
-          .from(this.tableName)
-          .select('*')
-          .eq('is_premium', true)
-      );
-
-      if (result.error) throw result.error;
-
-      return { data: result.data, error: null };
+      // Extract unique categories
+      const categories = [...new Set(result.data.map(item => item.category))];
+      
+      return { data: categories, error: null };
     } catch (error: any) {
       errorInterceptor(error);
       return { data: null, error };

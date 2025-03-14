@@ -1,7 +1,7 @@
 
 import { BaseService } from './baseService';
 import { SiteService, ApiResponse } from '../types';
-import { supabase, withTimeout, errorInterceptor, SupabaseQueryResult } from '../client';
+import { supabase, withTimeout, errorInterceptor } from '../client';
 
 class SitesService extends BaseService<SiteService> {
   constructor() {
