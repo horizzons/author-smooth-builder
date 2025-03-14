@@ -4,6 +4,7 @@ import { ApiResponse } from '../types';
 import { supabase, withTimeout, errorInterceptor } from '../client';
 import { Database } from '@/integrations/supabase/types';
 
+// Explicitly use the Row type from Database for clarity
 type SiteRow = Database['public']['Tables']['sites']['Row'];
 
 class SitesService extends BaseService<'sites'> {

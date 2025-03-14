@@ -6,13 +6,9 @@ import { Database } from '@/integrations/supabase/types';
 // Type for table names in our database
 type TableName = keyof Database['public']['Tables'];
 
-// Type to get the Row type from a table name
+// Simplified helpers for getting table types
 type TableRow<T extends TableName> = Database['public']['Tables'][T]['Row'];
-
-// Type to get the Insert type from a table name
 type TableInsert<T extends TableName> = Database['public']['Tables'][T]['Insert'];
-
-// Type to get the Update type from a table name
 type TableUpdate<T extends TableName> = Database['public']['Tables'][T]['Update'];
 
 export class BaseService<T extends TableName> {
@@ -66,7 +62,11 @@ export class BaseService<T extends TableName> {
   async create(record: TableInsert<T>): Promise<ApiResponse<TableRow<T>>> {
     try {
       const result = await withTimeout<TableRow<T>>(
-        supabase.from(this.tableName).insert(record).select().maybeSingle()
+        supabase
+          .from(this.tableName)
+          .insert(record as any)
+          .select()
+          .maybeSingle()
       );
 
       if (result.error) throw result.error;
@@ -86,7 +86,12 @@ export class BaseService<T extends TableName> {
   async update(id: string, record: TableUpdate<T>): Promise<ApiResponse<TableRow<T>>> {
     try {
       const result = await withTimeout<TableRow<T>>(
-        supabase.from(this.tableName).update(record).eq('id', id).select().maybeSingle()
+        supabase
+          .from(this.tableName)
+          .update(record as any)
+          .eq('id', id)
+          .select()
+          .maybeSingle()
       );
 
       if (result.error) throw result.error;

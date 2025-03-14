@@ -33,23 +33,18 @@ export class ApiError extends Error {
   }
 }
 
-// Direct database types (for reference only - we'll use the Database type directly)
-export type SiteService = Database['public']['Tables']['sites']['Row'];
-export type PageService = Database['public']['Tables']['pages']['Row'];
-export type BookService = Database['public']['Tables']['books']['Row'];
-export type AssetService = Database['public']['Tables']['assets']['Row'];
-export type BlogPostService = Database['public']['Tables']['blog_posts']['Row'];
-export type SeriesService = Database['public']['Tables']['series']['Row'];
-export type TemplateService = Database['public']['Tables']['templates']['Row'];
+// Use the Database types directly from Supabase
+export type SiteRow = Database['public']['Tables']['sites']['Row'];
+export type PageRow = Database['public']['Tables']['pages']['Row'];
+export type BookRow = Database['public']['Tables']['books']['Row'];
+export type AssetRow = Database['public']['Tables']['assets']['Row'];
+export type BlogPostRow = Database['public']['Tables']['blog_posts']['Row'];
+export type SeriesRow = Database['public']['Tables']['series']['Row'];
+export type TemplateRow = Database['public']['Tables']['templates']['Row'];
+export type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 
 // Define interface for profile with user data
-export interface ProfileService {
-  id: string;
-  first_name: string | null;
-  last_name: string | null; 
-  avatar_url: string | null;
-  created_at: string;
-  updated_at: string;
+export interface ProfileWithUser extends ProfileRow {
   user?: User | null;
 }
 

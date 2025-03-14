@@ -1,16 +1,13 @@
 
 import { BaseService } from './baseService';
-import { ApiResponse } from '../types';
+import { ApiResponse, ProfileWithUser } from '../types';
 import { supabase, withTimeout, errorInterceptor } from '../client';
 import { Database } from '@/integrations/supabase/types';
 import { User } from '@/types/auth';
 
+// Explicitly use the Row and Update types from Database for clarity
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
-
-interface ProfileWithUser extends ProfileRow {
-  user: User | null;
-}
 
 class ProfilesService extends BaseService<'profiles'> {
   constructor() {
