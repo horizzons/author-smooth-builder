@@ -7,8 +7,8 @@ import { ErrorMessage } from '@/components/ui/error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function SitesList() {
-  // Example of using trpc query with our custom hook for loading/error states
-  const sitesQuery = trpc.sites.getAll.useQuery();
+  // Update to use getUserSites instead of getAll
+  const sitesQuery = trpc.sites.getUserSites.useQuery();
   const { isLoading, error, errorMessage } = useTrpcQueryState(sitesQuery);
   
   if (isLoading) {
@@ -51,8 +51,9 @@ export function CreateSiteForm() {
   // Example of using our custom mutation hook
   const utils = trpc.useContext();
   
+  // Update to use createSite instead of create
   const createSiteMutation = useTrpcMutation(
-    (input) => trpc.sites.create.mutate(input),
+    (input) => trpc.sites.createSite.mutate(input),
     {
       showSuccessToast: true,
       successMessage: 'Site created successfully!',
@@ -73,7 +74,8 @@ export function CreateSiteForm() {
       setSubdomain('');
       
       // Invalidate query cache to refresh the sites list
-      utils.sites.getAll.invalidate();
+      // Update to use getUserSites instead of getAll
+      utils.sites.getUserSites.invalidate();
     }
   };
   
