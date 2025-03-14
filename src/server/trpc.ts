@@ -77,15 +77,11 @@ const isAdmin = middleware(async ({ next, ctx }) => {
     });
   }
   
-  // Check if user is admin here - this is a placeholder
-  // You would implement proper role checking based on your database schema
-  const { data, error } = await ctx.supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', ctx.user.id)
-    .maybeSingle();
-    
-  const isUserAdmin = data?.role === 'admin';
+  // Check if user is admin - we need to modify this since 'role' doesn't exist
+  // For now, let's use a hardcoded list of admin emails or IDs
+  // In a real application, you would use a dedicated user_roles table
+  const ADMIN_EMAILS = ['admin@example.com']; // Replace with actual admin emails
+  const isUserAdmin = ADMIN_EMAILS.includes(ctx.user.email);
   
   if (!isUserAdmin) {
     throw new TRPCError({
