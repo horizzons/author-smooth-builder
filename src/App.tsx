@@ -20,30 +20,30 @@ function App() {
         <ErrorBoundary>
           <Router>
             <div className="flex flex-col min-h-screen">
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Header />
-                      <main className="flex-1">
+              <Header />
+              <main className="flex-1">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<AuthPage />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
                         <Dashboard />
-                      </main>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/editor"
-                  element={
-                    <ProtectedRoute>
-                      <EditorLayout />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/editor"
+                    element={
+                      <ProtectedRoute>
+                        <EditorLayout />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
             </div>
             <Toaster />
           </Router>
