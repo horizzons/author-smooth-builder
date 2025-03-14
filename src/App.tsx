@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { TRPCProviders } from './lib/trpc/providers';
 import Header from './components/Header';
@@ -16,9 +16,9 @@ import './App.css';
 function App() {
   console.log("App rendering, configuring routes");
   return (
-    <TRPCProviders>
-      <AuthProvider>
-        <ErrorBoundary>
+    <ErrorBoundary>
+      <TRPCProviders>
+        <AuthProvider>
           <Router>
             <div className="flex flex-col min-h-screen">
               {/* Only show header on non-editor pages */}
@@ -47,9 +47,9 @@ function App() {
             </div>
             <Toaster />
           </Router>
-        </ErrorBoundary>
-      </AuthProvider>
-    </TRPCProviders>
+        </AuthProvider>
+      </TRPCProviders>
+    </ErrorBoundary>
   );
 }
 

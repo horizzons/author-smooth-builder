@@ -13,41 +13,35 @@ export function TRPCProviders({ children }: TRPCProvidersProps) {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        retry: 1,
+        retry: false,
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000, // 5 minutes
       },
       mutations: {
-        retry: 0,
+        retry: false,
       },
     },
   }));
   
   const [trpcClient] = useState(() => {
-    // Add debugging logs
     console.log('Initializing TRPC client');
     
     return trpc.createClient({
       links: [
         httpBatchLink({
           url: `${window.location.origin}/api/trpc`,
-          // For debugging, log the URL
           fetch: async (url, options) => {
             console.log('TRPC request to:', url);
             try {
-              return await fetch(url, options);
+              const response = await fetch(url, options);
+              if (!response.ok) {
+                console.error('TRPC response not OK:', response.status, response.statusText);
+              }
+              return response;
             } catch (error) {
               console.error('TRPC fetch error:', error);
               throw error;
             }
-          },
-          headers: () => {
-            // get auth token from localStorage or similar
-            const token = localStorage.getItem('authToken');
-            return {
-              ...token ? { Authorization: `Bearer ${token}` } : {},
-              'Content-Type': 'application/json',
-            };
           },
         }),
       ],
@@ -55,6 +49,7 @@ export function TRPCProviders({ children }: TRPCProvidersProps) {
     });
   });
 
+  console.log('Rendering TRPC providers');
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>

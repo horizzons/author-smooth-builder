@@ -3,25 +3,35 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// For debugging
-console.log('Application starting, looking for root element');
+// Enhanced error handling
+console.log('Application starting');
 
-// Get the root element and handle null case
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  console.error('Failed to find the root element');
-  throw new Error('Failed to find the root element');
-}
-
-// Add global error handler for debugging
+// Global error handlers for better debugging
 window.addEventListener('error', (event) => {
   console.error('Global error caught:', event.error);
+  console.error('Error details:', {
+    message: event.message,
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno,
+    stack: event.error?.stack,
+  });
 });
 
-// Add unhandled promise rejection handler
 window.addEventListener('unhandledrejection', (event) => {
   console.error('Unhandled promise rejection:', event.reason);
+  console.error('Rejection details:', {
+    message: event.reason?.message,
+    stack: event.reason?.stack,
+  });
 });
+
+// Get root element
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  console.error('Failed to find the root element with id "root"');
+  throw new Error('Failed to find the root element');
+}
 
 // Create root and render app
 console.log('Root element found, rendering app');
