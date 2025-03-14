@@ -21,10 +21,10 @@ export const getTRPCErrorType = (error: unknown): ApiErrorType => {
     return ApiErrorType.UNKNOWN;
   }
   
-  // Try to extract the error type from the tRPC error
-  const errorType = error.data?.type as ApiErrorType | undefined;
-  if (errorType) {
-    return errorType;
+  // Check if error.data exists and has a type property
+  const errorData = error.data as Record<string, unknown> | undefined;
+  if (errorData && typeof errorData.type === 'string') {
+    return errorData.type as ApiErrorType;
   }
   
   // Fallback error type detection
@@ -56,10 +56,10 @@ export const getTRPCErrorMessage = (error: unknown): string => {
     return 'An unexpected error occurred';
   }
   
-  // Try to extract the custom message from the tRPC error
-  const message = error.data?.message as string | undefined;
-  if (message) {
-    return message;
+  // Check if error.data exists and has a message property
+  const errorData = error.data as Record<string, unknown> | undefined;
+  if (errorData && typeof errorData.message === 'string') {
+    return errorData.message;
   }
   
   return error.message || 'An unexpected error occurred';
