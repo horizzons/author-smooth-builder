@@ -14,13 +14,19 @@ import EditorLayout from './features/editor/EditorLayout';
 import './App.css';
 
 function App() {
+  console.log("App rendering, configuring routes");
   return (
     <TRPCProviders>
       <AuthProvider>
         <ErrorBoundary>
-          <Router basename="/">
+          <Router>
             <div className="flex flex-col min-h-screen">
-              <Header />
+              {/* Only show header on non-editor pages */}
+              <Routes>
+                <Route path="/editor/*" element={null} />
+                <Route path="*" element={<Header />} />
+              </Routes>
+              
               <main className="flex-1">
                 <Routes>
                   <Route path="/" element={<Index />} />

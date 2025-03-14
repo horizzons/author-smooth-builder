@@ -4,17 +4,49 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/componen
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Save, Undo, Redo, Eye, Settings, Layers } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useEditorStore } from '@/store/editorStore';
 import EditorSidebar from './EditorSidebar';
 import EditorCanvas from './EditorCanvas';
 import EditorProperties from './EditorProperties';
 
 const EditorLayout: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { pages, currentPageId, initialized } = useEditorStore();
   
   useEffect(() => {
     console.log('EditorLayout mounted at path:', location.pathname);
-  }, [location]);
+    console.log('Editor store state:', { 
+      pagesCount: pages.length,
+      currentPageId,
+      initialized
+    });
+    
+    // Initialize the editor if needed
+    if (!initialized) {
+      useEditorStore.getState().initialize();
+    }
+    
+    // Redirect if needed
+    if (initialized && pages.length === 0) {
+      console.log('No pages found, editor may need initialization');
+    }
+  }, [location, pages, currentPageId, initialized]);
+
+  // For debugging purposes
+  if (!initialized) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="mb-4">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          </div>
+          <p className="text-muted-foreground">Initializing editor...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-background">
