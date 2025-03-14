@@ -1,9 +1,9 @@
 
 import { BaseService } from './baseService';
-import { TemplateService, ApiResponse } from '../types';
+import { TemplateService as TemplateServiceType, ApiResponse } from '../types';
 import { supabase, withTimeout, errorInterceptor } from '../client';
 
-class TemplatesService extends BaseService<TemplateService> {
+class TemplatesService extends BaseService<TemplateServiceType> {
   constructor() {
     super('templates');
   }
@@ -11,9 +11,9 @@ class TemplatesService extends BaseService<TemplateService> {
   /**
    * Get all templates
    */
-  async getAllTemplates(): Promise<ApiResponse<TemplateService[]>> {
+  async getAllTemplates(): Promise<ApiResponse<TemplateServiceType[]>> {
     try {
-      const result = await withTimeout<TemplateService[]>(
+      const result = await withTimeout<TemplateServiceType[]>(
         supabase
           .from(this.tableName)
           .select('*')
@@ -33,9 +33,9 @@ class TemplatesService extends BaseService<TemplateService> {
    * Get templates by category
    * @param category Template category
    */
-  async getTemplatesByCategory(category: string): Promise<ApiResponse<TemplateService[]>> {
+  async getTemplatesByCategory(category: string): Promise<ApiResponse<TemplateServiceType[]>> {
     try {
-      const result = await withTimeout<TemplateService[]>(
+      const result = await withTimeout<TemplateServiceType[]>(
         supabase
           .from(this.tableName)
           .select('*')
