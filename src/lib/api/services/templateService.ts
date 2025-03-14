@@ -16,7 +16,7 @@ class TemplatesService extends BaseService<TemplateService> {
     try {
       const { data, error } = await withTimeout(
         supabase
-          .from(this.tableName)
+          .from(this.tableName as 'templates')
           .select('*')
           .eq('category', category)
       );
@@ -37,7 +37,7 @@ class TemplatesService extends BaseService<TemplateService> {
     try {
       const { data, error } = await withTimeout(
         supabase
-          .from(this.tableName)
+          .from(this.tableName as 'templates')
           .select('*')
           .eq('is_premium', false)
       );
@@ -58,7 +58,7 @@ class TemplatesService extends BaseService<TemplateService> {
     try {
       const { data, error } = await withTimeout(
         supabase
-          .from(this.tableName)
+          .from(this.tableName as 'templates')
           .select('*')
           .eq('is_premium', true)
       );

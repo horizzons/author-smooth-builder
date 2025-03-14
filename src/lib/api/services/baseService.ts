@@ -1,11 +1,15 @@
 
 import { supabase, errorInterceptor, withTimeout } from '../client';
 import { ApiError, ApiErrorType, ApiResponse } from '../types';
+import { Database } from '@/integrations/supabase/types';
+
+// Type for table names in our database
+type TableName = keyof Database['public']['Tables'];
 
 export class BaseService<T> {
-  protected tableName: string;
+  protected tableName: TableName;
 
-  constructor(tableName: string) {
+  constructor(tableName: TableName) {
     this.tableName = tableName;
   }
 
@@ -50,7 +54,7 @@ export class BaseService<T> {
    * Create a new record
    * @param record Record data
    */
-  async create(record: Partial<T>): Promise<ApiResponse<T>> {
+  async create(record: any): Promise<ApiResponse<T>> {
     try {
       const { data, error } = await withTimeout(
         supabase.from(this.tableName).insert(record).select().maybeSingle()
@@ -70,7 +74,7 @@ export class BaseService<T> {
    * @param id Record ID
    * @param record Record data
    */
-  async update(id: string, record: Partial<T>): Promise<ApiResponse<T>> {
+  async update(id: string, record: any): Promise<ApiResponse<T>> {
     try {
       const { data, error } = await withTimeout(
         supabase.from(this.tableName).update(record).eq('id', id).select().maybeSingle()

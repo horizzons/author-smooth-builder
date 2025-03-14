@@ -23,7 +23,7 @@ class ProfilesService extends BaseService<ProfileService> {
       
       const { data, error } = await withTimeout(
         supabase
-          .from(this.tableName)
+          .from(this.tableName as 'profiles')
           .select('*')
           .eq('id', userId)
           .maybeSingle()
@@ -74,7 +74,7 @@ class ProfilesService extends BaseService<ProfileService> {
       
       const { data, error } = await withTimeout(
         supabase
-          .from(this.tableName)
+          .from(this.tableName as 'profiles')
           .update(dbProfile)
           .eq('id', session.session.user.id)
           .select()

@@ -15,7 +15,7 @@ class SitesService extends BaseService<SiteService> {
     try {
       const { data, error } = await withTimeout(
         supabase
-          .from(this.tableName)
+          .from(this.tableName as 'sites')
           .select('*')
           .order('created_at', { ascending: false })
       );
@@ -37,7 +37,7 @@ class SitesService extends BaseService<SiteService> {
     try {
       const { data, error } = await withTimeout(
         supabase
-          .from(this.tableName)
+          .from(this.tableName as 'sites')
           .select('id')
           .eq('subdomain', subdomain)
           .maybeSingle()
