@@ -1,7 +1,7 @@
 
 import { BaseService } from './baseService';
 import { SiteService, ApiResponse } from '../types';
-import { supabase, withTimeout, errorInterceptor } from '../client';
+import { supabase, withTimeout, errorInterceptor, SupabaseQueryResult } from '../client';
 
 class SitesService extends BaseService<SiteService> {
   constructor() {
@@ -13,9 +13,9 @@ class SitesService extends BaseService<SiteService> {
    */
   async getUserSites(): Promise<ApiResponse<SiteService[]>> {
     try {
-      const result = await withTimeout(
+      const result = await withTimeout<SiteService[]>(
         supabase
-          .from(this.tableName as 'sites')
+          .from(this.tableName)
           .select('*')
           .order('created_at', { ascending: false })
       );
@@ -35,9 +35,9 @@ class SitesService extends BaseService<SiteService> {
    */
   async checkSubdomainAvailability(subdomain: string): Promise<ApiResponse<boolean>> {
     try {
-      const result = await withTimeout(
+      const result = await withTimeout<any>(
         supabase
-          .from(this.tableName as 'sites')
+          .from(this.tableName)
           .select('id')
           .eq('subdomain', subdomain)
           .maybeSingle()

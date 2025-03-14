@@ -1,7 +1,7 @@
 
 import { BaseService } from './baseService';
 import { TemplateService, ApiResponse } from '../types';
-import { supabase, withTimeout, errorInterceptor } from '../client';
+import { supabase, withTimeout, errorInterceptor, SupabaseQueryResult } from '../client';
 
 class TemplatesService extends BaseService<TemplateService> {
   constructor() {
@@ -14,9 +14,9 @@ class TemplatesService extends BaseService<TemplateService> {
    */
   async getTemplatesByCategory(category: string): Promise<ApiResponse<TemplateService[]>> {
     try {
-      const result = await withTimeout(
+      const result = await withTimeout<TemplateService[]>(
         supabase
-          .from(this.tableName as 'templates')
+          .from(this.tableName)
           .select('*')
           .eq('category', category)
       );
@@ -35,9 +35,9 @@ class TemplatesService extends BaseService<TemplateService> {
    */
   async getFreeTemplates(): Promise<ApiResponse<TemplateService[]>> {
     try {
-      const result = await withTimeout(
+      const result = await withTimeout<TemplateService[]>(
         supabase
-          .from(this.tableName as 'templates')
+          .from(this.tableName)
           .select('*')
           .eq('is_premium', false)
       );
@@ -56,9 +56,9 @@ class TemplatesService extends BaseService<TemplateService> {
    */
   async getPremiumTemplates(): Promise<ApiResponse<TemplateService[]>> {
     try {
-      const result = await withTimeout(
+      const result = await withTimeout<TemplateService[]>(
         supabase
-          .from(this.tableName as 'templates')
+          .from(this.tableName)
           .select('*')
           .eq('is_premium', true)
       );

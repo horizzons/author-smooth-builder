@@ -1,5 +1,5 @@
 
-import { supabase, errorInterceptor, withTimeout } from '../client';
+import { supabase, errorInterceptor, withTimeout, SupabaseQueryResult } from '../client';
 import { ApiError, ApiErrorType, ApiResponse } from '../types';
 import { Database } from '@/integrations/supabase/types';
 
@@ -18,7 +18,7 @@ export class BaseService<T> {
    */
   async getAll(): Promise<ApiResponse<T[]>> {
     try {
-      const result = await withTimeout(
+      const result = await withTimeout<T[]>(
         supabase.from(this.tableName).select('*')
       );
 
@@ -37,7 +37,7 @@ export class BaseService<T> {
    */
   async getById(id: string): Promise<ApiResponse<T>> {
     try {
-      const result = await withTimeout(
+      const result = await withTimeout<T>(
         supabase.from(this.tableName).select('*').eq('id', id).maybeSingle()
       );
 
@@ -56,7 +56,7 @@ export class BaseService<T> {
    */
   async create(record: any): Promise<ApiResponse<T>> {
     try {
-      const result = await withTimeout(
+      const result = await withTimeout<T>(
         supabase.from(this.tableName).insert(record).select().maybeSingle()
       );
 
@@ -76,7 +76,7 @@ export class BaseService<T> {
    */
   async update(id: string, record: any): Promise<ApiResponse<T>> {
     try {
-      const result = await withTimeout(
+      const result = await withTimeout<T>(
         supabase.from(this.tableName).update(record).eq('id', id).select().maybeSingle()
       );
 
@@ -123,7 +123,7 @@ export class BaseService<T> {
         }
       });
       
-      const result = await withTimeout(query);
+      const result = await withTimeout<T[]>(query);
 
       if (result.error) throw result.error;
 

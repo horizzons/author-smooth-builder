@@ -3,6 +3,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { SupabaseClient } from '@supabase/supabase-js';
 
+// Define a generic type for Supabase query results
+type SupabaseQueryResult<T = any> = {
+  data: T | null;
+  error: Error | null;
+};
+
 // API request timeout in milliseconds
 const DEFAULT_TIMEOUT = 30000;
 
@@ -59,15 +65,15 @@ const errorInterceptor = async (error: any) => {
  * @param timeout Timeout in milliseconds
  */
 const withTimeout = <T>(
-  queryBuilder: Promise<T> | ReturnType<SupabaseClient['from']> | any,
+  queryBuilder: any,
   timeout = DEFAULT_TIMEOUT
-): Promise<T> => {
+): Promise<SupabaseQueryResult<T>> => {
   // If the queryBuilder is a Supabase query, call .then() to convert it to a Promise
   const queryPromise = queryBuilder && typeof queryBuilder.then === 'function' 
     ? queryBuilder 
     : queryBuilder.then();
   
-  const timeoutPromise = new Promise<T>((_, reject) => {
+  const timeoutPromise = new Promise<SupabaseQueryResult<T>>((_, reject) => {
     setTimeout(() => {
       reject(new Error('Request timeout'));
     }, timeout);
@@ -81,5 +87,6 @@ export {
   requestInterceptor,
   responseInterceptor,
   errorInterceptor,
-  withTimeout
+  withTimeout,
+  type SupabaseQueryResult
 };

@@ -1,7 +1,7 @@
 
 import { BaseService } from './baseService';
 import { ProfileService, ApiResponse } from '../types';
-import { supabase, withTimeout, errorInterceptor } from '../client';
+import { supabase, withTimeout, errorInterceptor, SupabaseQueryResult } from '../client';
 
 class ProfilesService extends BaseService<ProfileService> {
   constructor() {
@@ -21,9 +21,9 @@ class ProfilesService extends BaseService<ProfileService> {
       
       const userId = session.session.user.id;
       
-      const result = await withTimeout(
+      const result = await withTimeout<any>(
         supabase
-          .from(this.tableName as 'profiles')
+          .from(this.tableName)
           .select('*')
           .eq('id', userId)
           .maybeSingle()
@@ -72,9 +72,9 @@ class ProfilesService extends BaseService<ProfileService> {
         avatar_url: profile.avatarUrl,
       };
       
-      const result = await withTimeout(
+      const result = await withTimeout<any>(
         supabase
-          .from(this.tableName as 'profiles')
+          .from(this.tableName)
           .update(dbProfile)
           .eq('id', session.session.user.id)
           .select()
