@@ -7,9 +7,9 @@ import { PenSquare, Plus } from 'lucide-react';
 
 const Dashboard = () => {
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="font-serif text-4xl font-bold">My Websites</h1>
+    <div className="container py-8">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold">My Websites</h1>
         <Button asChild>
           <Link to="/editor" className="flex items-center gap-2">
             <PenSquare className="h-4 w-4" />
@@ -19,14 +19,16 @@ const Dashboard = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Sample website cards */}
-        <Card className="animate-slideUp space-y-4 p-6">
-          <h3 className="font-serif text-xl font-semibold">My Author Site</h3>
-          <p className="text-muted-foreground">Personal website showcasing my books and blog.</p>
-          <div className="flex justify-end">
-            <Button variant="outline" asChild>
-              <Link to="/editor">Edit Site</Link>
-            </Button>
+        <Card className="border rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+          <div className="p-6">
+            <h2 className="text-xl font-semibold">My First Website</h2>
+            <p className="text-muted-foreground mt-2">Created 2 days ago</p>
+            <div className="mt-4 flex gap-2">
+              <Button size="sm" variant="outline">View</Button>
+              <Button size="sm" asChild>
+                <Link to="/editor">Edit</Link>
+              </Button>
+            </div>
           </div>
         </Card>
         
